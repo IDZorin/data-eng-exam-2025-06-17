@@ -8,10 +8,10 @@ venv/
 
 # airflow
 airflow_home/
-logs/
+logs/*
 airflow.db
 airflow.cfg
 
 # outputs
-results/
+results/*
 
