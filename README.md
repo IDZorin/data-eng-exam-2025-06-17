@@ -1,7 +1,7 @@
 # Airflow + Logistic Regression Pipeline
 
 > **Про что этот репозиторий**
-> Шаблон репликабельного ML-пайплайна c ETL → обучением → развёртыванием артефактов, оркестрированного Apache Airflow.
+> Шаблон репликабельного ML-пайплайна c ETL -> обучением -> развёртыванием артефактов, оркестрированного Apache Airflow.
 > В демо-режиме качаем небольшой CSV, обучаем `LogisticRegression`, считаем метрики и складываем результаты в GCS **и/или** в `results/`.
 > Хотите свой датасет / модель — меняете пару переменных, и шаблон превращается в ваш рабочий проект.
 
@@ -74,7 +74,7 @@
 
 * **DAG-id**: `breast_cancer_pipeline`
 * **Планировщик**: `schedule_interval` читается из переменной окружения `PIPELINE_SCHEDULE`
-  (`None` → только ручные запуски; пример CRON — `0 3 * * *`)
+  (`None` -> только ручные запуски; пример CRON — `0 3 * * *`)
 
 ---
 
@@ -82,11 +82,11 @@
 
 ```
 ├── dags/                # DAG Airflow «breast_cancer_pipeline»
-├── etl/                 # независимые модули: load → preprocess → train → evaluate → upload
-├── results/             # артефакты (csv / pkl / json) создаются сюда
-├── logs/                # runtime-логи (pipeline_<timestamp>.log)
+├── etl/                 # независимые модули: load -> preprocess -> train -> evaluate -> upload
+├── results/             # артефакты (csv / pkl / json) кладутся сюда
+├── logs/                # runtime-логи (pipeline.log)
 ├── proofs/              # скриншоты UI / GCS (для отчёта)
-├── keys/                # GCP service-account json (НЕ коммитим!)
+├── keys/                # GCP service-account json
 ├── docker-compose.yml   # webserver + scheduler
 ├── Dockerfile           # образ со всеми зависимостями
 ├── requirements.txt
@@ -106,12 +106,12 @@
 | `GCS_BUCKET`                     | `.env`                        | Имя бакета, куда грузим артефакты.                                                       |
 | `GCS_PREFIX`                     | `.env`                        | Путь-префикс внутри бакета *(по умолчанию `breast_cancer/`)*.                            |
 | `GOOGLE_APPLICATION_CREDENTIALS` | `.env` и `docker-compose.yml` | Путь к JSON-ключу service-account. Можно относительный — код сам приведёт к абсолютному. |
-| `PIPELINE_SCHEDULE`              | `.env`                        | CRON-выражение для DAG (пусто → без расписания, только ручные запуски).                  |
+| `PIPELINE_SCHEDULE`              | `.env`                        | CRON-выражение для DAG (пусто -> без расписания, только ручные запуски).                  |
 
 **Неочевидные «хардкоды»**
 
-* `dags/pipeline_dag.py` → `start_date=datetime(2025, 1, 1)`
-* `etl/config.py` → URL датасета примера
+* `dags/pipeline_dag.py` -> `start_date=datetime(2025, 1, 1)`
+* `etl/config.py` -> URL датасета примера
 * Airflow в Docker использует **SQLite** и **SequentialExecutor** — ок для dev ***не*** для prod.
 
 ---
@@ -141,7 +141,7 @@ docker compose up --build
 
 * **Модульность** — каждый шаг ETL разделён на самостоятельный Python-модуль: легко запускать из Airflow, CLI, CI-скриптов.
 * **Single Responsibility**: скрипты делают ровно одну вещь; повторное использование без изменения кода.
-* **ООС хранения** — артефакты всегда дублируются локально → быстрый дебаг даже без облака.
+* **ООС хранения** — артефакты всегда дублируются локально -> быстрый дебаг даже без облака.
 * **.env + docker-compose** — все переменные в одном месте, минимум дублирования путей.
 * **Лёгкий вход** — Makefile для тех, кто не хочет (пока) ставить Airflow, и полноценный Docker-стек для командной работы/CI.
 * **Логирование** — централизованный конфиг в `logger_setup.py`; логи пишутся и в файл, и в stdout.
@@ -159,7 +159,7 @@ docker compose up --build
   * 403 «Billing account disabled» — закрыт аккаунт или нет IAM-прав.
 * **Инфраструктура Airflow**
 
-  * Использование **SQLite** как metadata-БД — допустимо только для dev. В проде → PostgreSQL.
+  * Использование **SQLite** как metadata-БД — допустимо только для dev. В проде -> PostgreSQL.
   * **SequentialExecutor** — однопоточный; в проде выбирайте `LocalExecutor`/`CeleryExecutor`/`KubernetesExecutor`.
 
 ---
@@ -168,7 +168,7 @@ docker compose up --build
 
 1. Хранить логи по `pipeline_<dag_run_id>.log`, отгружать в S3 / Stackdriver.
 2. Добавить Data-quality-тесты (`great_expectations`, `pandera`).
-3. ПокрытьETL unit-тестами (`pytest`).
+3. Покрыть ETL unit-тестами (`pytest`).
 4. CI/CD — автодеплой DAG через GitHub Actions + Helm-chart.
 5. Дашборды в Grafana (метрики, время исполнения, ошибки).
 
